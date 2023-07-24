@@ -12,7 +12,7 @@ using TaskManagementSystem.DataAccess;
 namespace TaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230723210347_Initial")]
+    [Migration("20230724152752_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -54,21 +54,21 @@ namespace TaskManagementSystem.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "982191d5-5873-4402-873c-466d5986d770",
+                            Id = "f0f73f27-f616-432b-bfdd-9dd17ee218ab",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "65aa723e-7eec-41c9-aaef-0f64352f5854",
+                            Id = "4e8c7482-2737-4040-bd5b-2e07bd8598f2",
                             ConcurrencyStamp = "2",
                             Name = "Manager",
                             NormalizedName = "Manager"
                         },
                         new
                         {
-                            Id = "29bbc5a7-8171-4efd-bfa0-48d00e63d9e0",
+                            Id = "ebaab88e-d423-4acc-beb9-3fa955990041",
                             ConcurrencyStamp = "3",
                             Name = "User",
                             NormalizedName = "User"
@@ -254,13 +254,12 @@ namespace TaskManagementSystem.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Assignee")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -276,6 +275,9 @@ namespace TaskManagementSystem.DataAccess.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
+                    b.Property<int>("TaskStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -285,7 +287,6 @@ namespace TaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -350,9 +351,7 @@ namespace TaskManagementSystem.DataAccess.Migrations
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

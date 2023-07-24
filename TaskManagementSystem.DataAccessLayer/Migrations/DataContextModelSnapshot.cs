@@ -51,21 +51,21 @@ namespace TaskManagementSystem.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "9948539d-e0a1-4579-86b0-c9b875f59565",
+                            Id = "f0f73f27-f616-432b-bfdd-9dd17ee218ab",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "4af2fb10-b982-457d-9878-84df1bbceef8",
+                            Id = "4e8c7482-2737-4040-bd5b-2e07bd8598f2",
                             ConcurrencyStamp = "2",
                             Name = "Manager",
                             NormalizedName = "Manager"
                         },
                         new
                         {
-                            Id = "6fbb517d-717d-4ea9-a57e-55cafc25f196",
+                            Id = "ebaab88e-d423-4acc-beb9-3fa955990041",
                             ConcurrencyStamp = "3",
                             Name = "User",
                             NormalizedName = "User"

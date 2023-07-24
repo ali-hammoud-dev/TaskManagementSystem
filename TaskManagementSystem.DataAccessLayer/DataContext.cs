@@ -12,14 +12,12 @@ public class DataContext : IdentityDbContext<IdentityUser>
 
     }
 
-
     public DbSet<TaskModel> Tasks { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.EnableSensitiveDataLogging();
         if (!options.IsConfigured)
         {
             options.UseSqlServer("Server=ECOMZ-D-AH-L;Database=TaskManagement.db;User ID=sa;Password=p@ssw0rd;TrustServerCertificate=True");

@@ -164,12 +164,13 @@ namespace TaskManagementSystem.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
-                    Assignee = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TaskStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedByUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -181,8 +182,7 @@ namespace TaskManagementSystem.DataAccess.Migrations
                         name: "FK_Tasks_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -190,9 +190,9 @@ namespace TaskManagementSystem.DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "29bbc5a7-8171-4efd-bfa0-48d00e63d9e0", "3", "User", "User" },
-                    { "65aa723e-7eec-41c9-aaef-0f64352f5854", "2", "Manager", "Manager" },
-                    { "982191d5-5873-4402-873c-466d5986d770", "1", "Admin", "Admin" }
+                    { "4e8c7482-2737-4040-bd5b-2e07bd8598f2", "2", "Manager", "Manager" },
+                    { "ebaab88e-d423-4acc-beb9-3fa955990041", "3", "User", "User" },
+                    { "f0f73f27-f616-432b-bfdd-9dd17ee218ab", "1", "Admin", "Admin" }
                 });
 
             migrationBuilder.CreateIndex(

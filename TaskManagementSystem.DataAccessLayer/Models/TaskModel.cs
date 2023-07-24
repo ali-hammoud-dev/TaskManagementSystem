@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using TaskManagementSystem.Common.Enums;
 
 namespace TaskManagementSystem.DataAccess.Models;
@@ -9,7 +8,6 @@ public class TaskModel : BaseModel
 {
     public string? UserId { get; set; }
 
-    [ForeignKey(nameof(UserId))]
     public virtual IdentityUser? User { get; set; }
 
     [Required]
