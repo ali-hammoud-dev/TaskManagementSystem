@@ -14,11 +14,11 @@ namespace TaskManagementSystem.Business.Managers;
 public class TaskManager : BaseManager<TaskModel>, ITaskManager
 {
     private readonly IHttpContextAccessor _contextAccessor;
-    //private readonly CustomUserManager _customUserManager;
-    public TaskManager(ITaskRepository repository, IMapper mapper, IHttpContextAccessor contextAccessor/*, CustomUserManager customUserManager*/) : base(repository, mapper)
+    private readonly CustomUserManager _customUserManager;
+    public TaskManager(ITaskRepository repository, IMapper mapper, IHttpContextAccessor contextAccessor, CustomUserManager customUserManager) : base(repository, mapper)
     {
         _contextAccessor = contextAccessor;
-        //_customUserManager = customUserManager;
+        _customUserManager = customUserManager;
     }
 
     public async Task<TaskDto> GetById(int id)
@@ -73,6 +73,23 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
         await DeleteAsync(entityToBeDeleted);
 
     }
+
+    public async Task AssigneTask(int taskId, string userId)
+    {
+        var taskToBeAssigned = await GetById(taskId);
+        if (taskToBeAssigned is null)
+            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+                .ErrorMessage("Task does not Exist.").Build();
+
+        var userToBeAssigned = await _customUserManager.GetByIdAsync(userId);
+        if (userToBeAssigned is null)
+            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+                .ErrorMessage("User does not Exist.").Build();
+
+        taskToBeAssigned.UserId = userId;
+        await Update(taskToBeAssigned);
+    }
+
 
     //public async Task<TaskDto> AssigneTask(int taskId, string userId, DataContext contextFactory)
     //{

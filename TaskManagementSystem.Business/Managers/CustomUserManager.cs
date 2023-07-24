@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TaskManagementSystem.Business.DTOs;
@@ -11,7 +10,6 @@ namespace TaskManagementSystem.Business.Managers;
 public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
 {
 
-    private readonly IConfiguration _configuration;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
 
@@ -19,11 +17,10 @@ public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
     public CustomUserManager(IUserStore<IdentityUser> store, IOptions<IdentityOptions> optionsAccessor,
         IPasswordHasher<IdentityUser> passwordHasher, IEnumerable<IUserValidator<IdentityUser>> userValidators,
         IEnumerable<IPasswordValidator<IdentityUser>> passwordValidators, ILookupNormalizer keyNormalizer,
-        IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<IdentityUser>> logger, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper) :
+        IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<IdentityUser>> logger, RoleManager<IdentityRole> roleManager, IMapper mapper) :
         base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators,
         keyNormalizer, errors, services, logger)
     {
-        _configuration = configuration;
         _roleManager = roleManager;
         _mapper = mapper;
     }
@@ -54,7 +51,6 @@ public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
 
         }
 
-        // Assign roles to the user
         await AddToRoleAsync(newUser, role);
     }
 
