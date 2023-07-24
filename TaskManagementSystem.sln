@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementSystem.Common
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementSystem.DataAccess", "TaskManagementSystem.DataAccessLayer\TaskManagementSystem.DataAccess.csproj", "{2B06FD4B-3A97-4E1D-BF67-078542E28FAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementSystem.Logging", "TaskManagementSystem.Logging\TaskManagementSystem.Logging.csproj", "{B6EB924D-64E3-411B-93EF-4EF293D1B642}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2B06FD4B-3A97-4E1D-BF67-078542E28FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B06FD4B-3A97-4E1D-BF67-078542E28FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B06FD4B-3A97-4E1D-BF67-078542E28FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6EB924D-64E3-411B-93EF-4EF293D1B642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6EB924D-64E3-411B-93EF-4EF293D1B642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6EB924D-64E3-411B-93EF-4EF293D1B642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6EB924D-64E3-411B-93EF-4EF293D1B642}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

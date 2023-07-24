@@ -1,4 +1,4 @@
-﻿namespace TaskManagementSystem.Logging.Models;
+namespace TaskManagementSystem.Logging.Models;
 
 public class ErrorDetails
 {

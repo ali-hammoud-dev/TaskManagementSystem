@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using NLog;
 using TaskManagementSystem.Logging.Interfaces;
 using TaskManagementSystem.Logging.Models;
@@ -20,7 +20,8 @@ public class LoggerService : ILoggerService
 
     public void LogErrorException(Exception ex)
     {
-        throw new NotImplementedException();
+        var errorDetails = GetErrorDetails(ex);
+        LogError(errorDetails);
     }
 
     #region Private Methods
@@ -82,6 +83,4 @@ public class LoggerService : ILoggerService
         Logger.Error(errorDetails.Message);
     }
     #endregion
-
 }
-

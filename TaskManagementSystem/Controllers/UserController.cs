@@ -78,7 +78,8 @@ public class UserController : ControllerBase
 
             return Ok(new
             {
-                token = tokenHandler.WriteToken(token)
+                token = tokenHandler.WriteToken(token),
+                Expires = DateTime.Now.AddDays(1)
             });
         }
 
@@ -88,10 +89,9 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task CreateUser([FromBody] LoginDto user, string password, string role)
+    public async Task CreateUser([FromBody] LoginDto user, string role)
     {
-        await _userManager.CreateUserAsync(user, password, role);
+        await _userManager.CreateUserAsync(user, user.Password, role);
     }
-
 }
 

@@ -9,6 +9,8 @@ using TaskManagementSystem.Business.Managers.Interfaces;
 using TaskManagementSystem.DataAccess;
 using TaskManagementSystem.DataAccess.Interfaces;
 using TaskManagementSystem.DataAccess.Repositories;
+using TaskManagementSystem.Logging;
+using TaskManagementSystem.Logging.Interfaces;
 using TaskManagementSystem.Mapping;
 using TaskManagementSystem.OperationFilter;
 
@@ -24,14 +26,17 @@ builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<ITaskManager, TaskManager>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<CustomUserManager>();
+builder.Services.AddScoped<ILoggerService, LoggerService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-        dbContextOptionsBuilder => 
+        dbContextOptionsBuilder =>
             dbContextOptionsBuilder.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();

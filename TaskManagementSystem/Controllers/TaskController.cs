@@ -13,61 +13,114 @@ public class TaskController : ControllerBase
 {
     private readonly ITaskManager _manager;
 
-    public TaskController(ITaskManager manager) => _manager = manager;
+    public TaskController(ITaskManager manager)
+    {
+        _manager = manager;
+    }
 
     [HttpPost]
     [Authorize(Roles = "User,Admin,Manager")]
-    public async Task<TaskDto> CreateTask([FromBody] TaskDto taskDto) => await _manager.CreateTask(taskDto);
+    public async Task<IActionResult> CreateTask([FromBody] TaskDto taskDto)
+    {
+        try
+        {
+            var createdTask = await _manager.CreateTask(taskDto);
+            return Ok(createdTask);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = "Manager")]
-    public async Task<IEnumerable<TaskDto>> GetTasks() => await _manager.GetAll();
+    public async Task<IActionResult> GetTasks()
+    {
+        try
+        {
+            var allTasks = await _manager.GetAll();
+            return Ok(allTasks);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = "Manager")]
     [Route("{id:int:min(1)}")]
-    public async Task<TaskDto> GetTaskById([FromRoute] int id) => await _manager.GetById(id);
+    public async Task<IActionResult> GetTaskById([FromRoute] int id)
+    {
+        try
+        {
+            var task = await _manager.GetById(id);
+            return Ok(task);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpPut]
     [Authorize(Roles = "Manager")]
-    public async Task UpdateTask([FromBody] TaskDto taskDto) => await _manager.Update(taskDto);
+    public async Task<IActionResult> UpdateTask([FromBody] TaskDto taskDto)
+    {
+        try
+        {
+            await _manager.Update(taskDto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = "Manager,User")]
     [Route("/GetTasksByUserId/{userId}")]
-    public async Task<IEnumerable<TaskDto>> GetTasksByUserId([FromRoute] string userId) => await _manager.GetTaskForUser(userId);
+    public async Task<IActionResult> GetTasksByUserId([FromRoute] string userId)
+    {
+        try
+        {
+            var tasks = await _manager.GetTaskForUser(userId);
+            return Ok(tasks);
+
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpDelete]
     [Authorize(Roles = "Admin")]
-    [Route("/DeleteATask{taskId}")]
-    public async Task DeleTask([FromRoute] int taskId)
+    [Route("/DeleteATask/{taskId}")]
+    public async Task<IActionResult> DeleTask([FromRoute] int taskId)
     {
         await _manager.DeleTask(taskId);
-        HttpContext.Response.StatusCode = 204;
+        return NoContent();
     }
+
+
 
     [HttpPut]
     [Authorize(Roles = "Manager")]
-    [Route("/AssigneTask")]
-    public async Task AssigneTask([FromBody] TaskDto taskDto)
+    [Route("/Assigne/{userId}/task/{taskId}")]
+    public async Task<IActionResult> AssigneTask([FromRoute] int taskId, [FromRoute] string userId)
     {
-        await _manager.Update(taskDto);
-        HttpContext.Response.StatusCode = 204;
+        try
+        {
+            return Ok(_manager.AssigneTask(taskId, userId));
+        }
+        catch (Exception e)
+        {
+
+            return BadRequest(e.Message);
+        }
     }
-
-    //[HttpPut]
-    //[Authorize(Roles = "Manager")]
-    //[Route("/AssigneTask/{taskid}/user/{userId}")]
-    //public async Task<TaskDto> AssigneTask(int taskid, string userId, DataContext contextfactory)
-    //{
-    //    var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
-    //        .UseSqlServer("Server=ECOMZ-D-AH-L;Database=TaskManagement.db;User ID=sa;Password=p@ssw0rd;TrustServerCertificate=True")
-    //        .Options;
-
-    //    var contextFactory = new DataContextFactory(dbContextOptions);
-
-    //    return await _manager.AssigneTask(taskid, userId, contextfactory);
-
-    //}
 }
 
