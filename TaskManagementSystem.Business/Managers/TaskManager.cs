@@ -2,23 +2,24 @@
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
 using TaskManagementSystem.Business.DTOs;
 using TaskManagementSystem.Business.Managers.Interfaces;
 using TaskManagementSystem.Common.Enums;
 using TaskManagementSystem.Common.Exceptions;
 using TaskManagementSystem.DataAccess.Interfaces;
 using TaskManagementSystem.DataAccess.Models;
+using TaskManagementSystem.Logging.Interfaces;
 
 namespace TaskManagementSystem.Business.Managers;
 
 public class TaskManager : BaseManager<TaskModel>, ITaskManager
 {
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly CustomUserManager _customUserManager;
-    public TaskManager(ITaskRepository repository, IMapper mapper, IHttpContextAccessor contextAccessor, CustomUserManager customUserManager) : base(repository, mapper)
+
+    public TaskManager(ITaskRepository repository, IMapper mapper, ILoggerService loggerService, IHttpContextAccessor contextAccessor) : base(repository, mapper, loggerService)
     {
         _contextAccessor = contextAccessor;
-        _customUserManager = customUserManager;
     }
 
     public async Task<TaskDto> GetById(int id)
@@ -74,50 +75,34 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
 
     }
 
+    public async Task DeleArrangeTask(IEnumerable<TaskDto> taskDtos, string userId)
+    {
+        var entities = await QueryAsync(x => x.UserId == userId);
+        await DeleteArrangeAsync(entities);
+    }
+
     public async Task AssigneTask(int taskId, string userId)
     {
-        var taskToBeAssigned = await GetById(taskId);
+        var taskToBeAssigned = await QueryItemAsync(x => x.Id == taskId);
         if (taskToBeAssigned is null)
             throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
                 .ErrorMessage("Task does not Exist.").Build();
 
-        var userToBeAssigned = await _customUserManager.GetByIdAsync(userId);
+        var usermanager = _contextAccessor.HttpContext.RequestServices.GetService<ICustomUsermanager>();
+        var userToBeAssigned = await usermanager.GetByIdAsync(userId);
         if (userToBeAssigned is null)
             throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
                 .ErrorMessage("User does not Exist.").Build();
 
         taskToBeAssigned.UserId = userId;
-        await Update(taskToBeAssigned);
+        await UpdateAsync(taskToBeAssigned);
     }
-
-
-    //public async Task<TaskDto> AssigneTask(int taskId, string userId, DataContext contextFactory)
-    //{
-    //    var taskToBeAssigned = await GetById(taskId);
-    //    if (taskToBeAssigned is null)
-    //        throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
-    //            .ErrorMessage("Task does not Exist.").Build();
-
-    //    var userToBeAssigned = await _customUserManager.GetByIdAsync(userId);
-    //    if (userToBeAssigned is null)
-    //        throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
-    //            .ErrorMessage("User does not Exist.").Build();
-
-    //    taskToBeAssigned.UserId = userId;
-
-    //    contextFactory.Update(taskToBeAssigned);
-    //    await contextFactory.SaveChangesAsync();
-    //    await Update(taskToBeAssigned);
-
-    //    return taskToBeAssigned;
-    //}
-
 
     #region Private Methods
     private string GetUserId()
     {
         ClaimsPrincipal user = _contextAccessor.HttpContext.User;
-        Claim userIdClaim = user.FindFirst("UserId");
+        Claim? userIdClaim = user.FindFirst("UserId");
 
         if (userIdClaim != null)
             return userIdClaim.Value;
@@ -126,4 +111,3 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
     }
     #endregion
 }
-

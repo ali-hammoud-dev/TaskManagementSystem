@@ -14,6 +14,8 @@ public interface IBaseManager<TEntity> where TEntity : class
 
     Task DeleteAsync(TEntity entity);
 
+    Task DeleteArrangeAsync(IEnumerable<TEntity> entities);
+
     Task<TEntity> QueryItemAsync(Expression<Func<TEntity, bool>> predicate);
 
     Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> predicate);

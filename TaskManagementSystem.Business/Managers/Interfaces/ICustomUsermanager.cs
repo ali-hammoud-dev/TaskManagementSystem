@@ -11,4 +11,12 @@ public interface ICustomUsermanager
 
     Task CreateUserAsync(LoginDto user, string password, string Role);
 
+    Task DeleteUserArrangeAsync(string userId);
+
+    Task<IdentityUser> FindByNameAsync(string name);
+
+    Task<bool> CheckPasswordAsync(IdentityUser user, string password);
+
+    Task<IList<string>> GetRolesAsync(IdentityUser user);
+
 }

@@ -16,7 +16,7 @@ public class TaskDto : BaseDto
 
     public TaskStatusEnum TaskStatus { get; set; }
 
-    public string CreatedByUserId { get; set; }
+    public string? CreatedByUserId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

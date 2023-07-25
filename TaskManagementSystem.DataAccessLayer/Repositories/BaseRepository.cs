@@ -39,6 +39,12 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         await Context.SaveChangesAsync();
     }
 
+    public async Task DeleteArrangeAsync(IEnumerable<TEntity> entitys)
+    {
+        _dbSet.RemoveRange(entitys);
+        await Context.SaveChangesAsync();
+    }
+
     public async Task<TEntity> QueryItemAsync(Expression<Func<TEntity, bool>> predicate) => await _dbSet.FirstOrDefaultAsync(predicate);
 
     public async Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> predicate) => await _dbSet.Where(predicate).ToListAsync();

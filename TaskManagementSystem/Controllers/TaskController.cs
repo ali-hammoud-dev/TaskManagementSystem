@@ -13,114 +13,42 @@ public class TaskController : ControllerBase
 {
     private readonly ITaskManager _manager;
 
-    public TaskController(ITaskManager manager)
-    {
-        _manager = manager;
-    }
+    public TaskController(ITaskManager manager) => _manager = manager;
 
     [HttpPost]
     [Authorize(Roles = "User,Admin,Manager")]
-    public async Task<IActionResult> CreateTask([FromBody] TaskDto taskDto)
-    {
-        try
-        {
-            var createdTask = await _manager.CreateTask(taskDto);
-            return Ok(createdTask);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
+    public async Task<TaskDto> CreateTask([FromBody] TaskDto taskDto) => await _manager.CreateTask(taskDto);
 
     [HttpGet]
     [Authorize(Roles = "Manager")]
-    public async Task<IActionResult> GetTasks()
-    {
-        try
-        {
-            var allTasks = await _manager.GetAll();
-            return Ok(allTasks);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
+    public async Task<IEnumerable<TaskDto>> GetTasks() => await _manager.GetAll();
+
 
     [HttpGet]
     [Authorize(Roles = "Manager")]
     [Route("{id:int:min(1)}")]
-    public async Task<IActionResult> GetTaskById([FromRoute] int id)
-    {
-        try
-        {
-            var task = await _manager.GetById(id);
-            return Ok(task);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    public async Task<TaskDto> GetTaskById([FromRoute] int id) => await _manager.GetById(id);
+
 
     [HttpPut]
     [Authorize(Roles = "Manager")]
-    public async Task<IActionResult> UpdateTask([FromBody] TaskDto taskDto)
-    {
-        try
-        {
-            await _manager.Update(taskDto);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+    public async Task UpdateTask([FromBody] TaskDto taskDto) => await _manager.Update(taskDto);
 
     [HttpGet]
     [Authorize(Roles = "Manager,User")]
     [Route("/GetTasksByUserId/{userId}")]
-    public async Task<IActionResult> GetTasksByUserId([FromRoute] string userId)
-    {
-        try
-        {
-            var tasks = await _manager.GetTaskForUser(userId);
-            return Ok(tasks);
+    public async Task<IEnumerable<TaskDto>> GetTasksByUserId([FromRoute] string userId) => await _manager.GetTaskForUser(userId);
 
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
     [HttpDelete]
     [Authorize(Roles = "Admin")]
     [Route("/DeleteATask/{taskId}")]
-    public async Task<IActionResult> DeleTask([FromRoute] int taskId)
-    {
-        await _manager.DeleTask(taskId);
-        return NoContent();
-    }
-
-
+    public async Task DeleTask([FromRoute] int taskId) => await _manager.DeleTask(taskId);
 
     [HttpPut]
     [Authorize(Roles = "Manager")]
     [Route("/Assigne/{userId}/task/{taskId}")]
-    public async Task<IActionResult> AssigneTask([FromRoute] int taskId, [FromRoute] string userId)
-    {
-        try
-        {
-            return Ok(_manager.AssigneTask(taskId, userId));
-        }
-        catch (Exception e)
-        {
+    public async Task AssigneTask([FromRoute] int taskId, [FromRoute] string userId) => await _manager.AssigneTask(taskId, userId);
 
-            return BadRequest(e.Message);
-        }
-    }
 }
 
