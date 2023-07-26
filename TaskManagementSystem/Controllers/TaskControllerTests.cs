@@ -174,7 +174,7 @@ public class TaskControllerTests
     [Fact]
     public async Task AssigneTaskValidTaskIdAndUserIdReturnsNoContent()
     {
-        int taskId = 2004; 
+        int taskId = 2004;
         string userId = "3f8182d9-c0fd-4fc1-a83b-d5b1eb01c1cb";
 
         _mockTaskManager.Setup(manager => manager.AssigneTask(taskId, userId)).Returns(Task.CompletedTask);

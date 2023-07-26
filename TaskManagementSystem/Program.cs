@@ -4,32 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using TaskManagementSystem.Business.Managers;
-using TaskManagementSystem.Business.Managers.Interfaces;
+using TaskManagementSystem;
 using TaskManagementSystem.DataAccess;
-using TaskManagementSystem.DataAccess.Interfaces;
-using TaskManagementSystem.DataAccess.Repositories;
-using TaskManagementSystem.Logging;
-using TaskManagementSystem.Logging.Interfaces;
 using TaskManagementSystem.Mapping;
 using TaskManagementSystem.OperationFilter;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped(typeof(IBaseManager<>), typeof(BaseManager<>));
-builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<ILoggerService, LoggerService>();
+builder.Services.RegisterServiceCollection(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICustomUsermanager, CustomUserManager>();
-builder.Services.AddScoped<ITaskManager, TaskManager>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
