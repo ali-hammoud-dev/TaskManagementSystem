@@ -31,6 +31,5 @@ public class TaskModel : BaseModel
     public DateTime UpdatedAt { get; set; }
 
     public DateTime DueDate { get; set; }
-
 }
 

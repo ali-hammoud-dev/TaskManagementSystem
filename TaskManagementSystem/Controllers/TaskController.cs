@@ -16,7 +16,7 @@ public class TaskController : ControllerBase
     public TaskController(ITaskManager manager) => _manager = manager;
 
     [HttpPost]
-    [Authorize(Roles = "User,Admin,Manager")]
+    [Authorize(Roles = "User")]
     public async Task<TaskDto> CreateTask([FromBody] TaskDto taskDto) => await _manager.CreateTask(taskDto);
 
     [HttpGet]
@@ -32,10 +32,14 @@ public class TaskController : ControllerBase
 
     [HttpPut]
     [Authorize(Roles = "Manager")]
-    public async Task UpdateTask([FromBody] TaskDto taskDto) => await _manager.Update(taskDto);
+    public async Task<IActionResult> UpdateTask([FromBody] TaskDto taskDto)
+    {
+        await _manager.Update(taskDto);
+        return NoContent();
+    }
 
     [HttpGet]
-    [Authorize(Roles = "Manager,User")]
+    [Authorize(Roles = "User")]
     [Route("/GetTasksByUserId/{userId}")]
     public async Task<IEnumerable<TaskDto>> GetTasksByUserId([FromRoute] string userId) => await _manager.GetTaskForUser(userId);
 
@@ -48,7 +52,10 @@ public class TaskController : ControllerBase
     [HttpPut]
     [Authorize(Roles = "Manager")]
     [Route("/Assigne/{userId}/task/{taskId}")]
-    public async Task AssigneTask([FromRoute] int taskId, [FromRoute] string userId) => await _manager.AssigneTask(taskId, userId);
-
+    public async Task<IActionResult> AssigneTask([FromRoute] int taskId, [FromRoute] string userId)
+    {
+        await _manager.AssigneTask(taskId, userId);
+        return NoContent();
+    }
 }
 
