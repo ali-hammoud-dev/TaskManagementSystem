@@ -1,14 +1,16 @@
-﻿namespace TaskManagementSystem.Common.Exceptions;
+﻿using System.Net;
+
+namespace TaskManagementSystem.Common.Exceptions;
 
 public class PlatformExceptionBuilder
 {
     #region Private Fields
-    private int _statusCode;
+    private HttpStatusCode _statusCode;
     private string _errorMessage;
     #endregion
 
     #region Public Methods
-    public PlatformExceptionBuilder StatusCode(int statusCode)
+    public PlatformExceptionBuilder StatusCode(HttpStatusCode statusCode)
     {
         _statusCode = statusCode;
         return this;

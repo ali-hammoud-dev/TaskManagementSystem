@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -42,7 +43,7 @@ public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(404).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -56,7 +57,7 @@ public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(400).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.BadRequest).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -80,7 +81,7 @@ public class CustomUserManager : UserManager<IdentityUser>, ICustomUsermanager
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(204).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
         }
     }
 

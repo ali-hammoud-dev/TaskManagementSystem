@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System.Linq.Expressions;
+using System.Net;
 using TaskManagementSystem.Business.Managers.Interfaces;
 using TaskManagementSystem.Common.Exceptions;
 using TaskManagementSystem.DataAccess.Interfaces;
@@ -32,7 +33,7 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         {
 
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(404).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -48,7 +49,7 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(204).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -63,7 +64,7 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(204).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -77,7 +78,7 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(204).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
         }
     }
 
@@ -91,7 +92,7 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         catch (Exception e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(400).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound).ErrorMessage(e.Message).Build();
         }
     }
 

@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Business.DTOs;
 using TaskManagementSystem.Business.Managers.Interfaces;
+using TaskManagementSystem.Common.Exceptions;
 
 namespace TaskManagementSystem.Controllers;
 
 [ApiController]
-[Authorize]
+//[Authorize]
 [Route("api/tasks")]
 
 public class TaskController : ControllerBase
@@ -16,46 +16,61 @@ public class TaskController : ControllerBase
     public TaskController(ITaskManager manager) => _manager = manager;
 
     [HttpPost]
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     public async Task<TaskDto> CreateTask([FromBody] TaskDto taskDto) => await _manager.CreateTask(taskDto);
 
     [HttpGet]
-    [Authorize(Roles = "Manager")]
+    //[Authorize(Roles = "Manager")]
     public async Task<IEnumerable<TaskDto>> GetTasks() => await _manager.GetAll();
 
 
     [HttpGet]
-    [Authorize(Roles = "Manager")]
+    //[Authorize(Roles = "Manager")]
     [Route("{id:int:min(1)}")]
     public async Task<TaskDto> GetTaskById([FromRoute] int id) => await _manager.GetById(id);
 
 
     [HttpPut]
-    [Authorize(Roles = "Manager")]
+    //[Authorize(Roles = "Manager")]
     public async Task<IActionResult> UpdateTask([FromBody] TaskDto taskDto)
     {
-        await _manager.Update(taskDto);
-        return NoContent();
+        try
+        {
+            await _manager.Update(taskDto);
+            return NoContent();
+        }
+        catch (PlatformException e)
+        {
+            return StatusCode((int)e.StatusCode, new { ErrorMessage = e.ErrorMessage });
+        }
     }
 
     [HttpGet]
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     [Route("/GetTasksByUserId/{userId}")]
     public async Task<IEnumerable<TaskDto>> GetTasksByUserId([FromRoute] string userId) => await _manager.GetTaskForUser(userId);
 
 
     [HttpDelete]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("/DeleteATask/{taskId}")]
     public async Task DeleTask([FromRoute] int taskId) => await _manager.DeleTask(taskId);
 
     [HttpPut]
-    [Authorize(Roles = "Manager")]
+    //[Authorize(Roles = "Manager")]
     [Route("/Assigne/{userId}/task/{taskId}")]
     public async Task<IActionResult> AssigneTask([FromRoute] int taskId, [FromRoute] string userId)
     {
-        await _manager.AssigneTask(taskId, userId);
-        return NoContent();
+        try
+        {
+            await _manager.AssigneTask(taskId, userId);
+            return NoContent();
+        }
+        catch (PlatformException e)
+        {
+            return StatusCode((int)e.StatusCode, new { ErrorMessage = e.ErrorMessage });
+
+        }
     }
 }
 

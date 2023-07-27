@@ -26,7 +26,7 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
     {
         var taskEntity = await GetByIdAsync(id);
         if (taskEntity is null)
-            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
                 .ErrorMessage("Task does not Exist.").Build();
 
         var taskDto = Mapper.Map<TaskDto>(taskEntity);
@@ -55,7 +55,7 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
     public async Task Update(TaskDto taskDto)
     {
         if (taskDto.Id == 0)
-            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
                 .ErrorMessage("Task does not Exist.").Build();
 
 
@@ -85,13 +85,13 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
     {
         var taskToBeAssigned = await QueryItemAsync(x => x.Id == taskId);
         if (taskToBeAssigned is null)
-            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
                 .ErrorMessage("Task does not Exist.").Build();
 
         var usermanager = _contextAccessor.HttpContext.RequestServices.GetService<ICustomUsermanager>();
         var userToBeAssigned = await usermanager.GetByIdAsync(userId);
         if (userToBeAssigned is null)
-            throw new PlatformExceptionBuilder().StatusCode((int)HttpStatusCode.NotFound)
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
                 .ErrorMessage("User does not Exist.").Build();
 
         taskToBeAssigned.UserId = userId;

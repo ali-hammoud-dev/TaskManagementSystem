@@ -1,15 +1,17 @@
-﻿namespace TaskManagementSystem.Common.Exceptions;
+﻿using System.Net;
+
+namespace TaskManagementSystem.Common.Exceptions;
 
 public class PlatformException : Exception
 {
     #region Properties 
-    public int StatusCode { get; }
+    public HttpStatusCode StatusCode { get; }
 
     public string ErrorMessage { get; }
     #endregion
 
     #region Constructor
-    internal PlatformException(int statusCode, string errorMessage)
+    internal PlatformException(HttpStatusCode statusCode, string errorMessage)
     {
         StatusCode = statusCode;
         ErrorMessage = errorMessage;
