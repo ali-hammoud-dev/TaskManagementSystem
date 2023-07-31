@@ -42,8 +42,9 @@ public class TaskControllerTests
         _mockTaskManager.Setup(manager => manager.CreateTask(taskDto)).ReturnsAsync(createdTaskDto);
 
         var result = await _taskController.CreateTask(taskDto);
-        var okObjectResult = Assert.IsType<TaskDto>(result);
-        var returnedTaskDto = Assert.IsType<TaskDto>(okObjectResult);
+
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTaskDto = Assert.IsType<TaskDto>(okObjectResult.Value);
         Assert.Equal(createdTaskDto, returnedTaskDto);
     }
 
@@ -71,9 +72,11 @@ public class TaskControllerTests
 
         var result = await _taskController.GetTasks();
 
-        var okObjectResult = Assert.IsType<List<TaskDto>>(result);
-        var returnedTasks = Assert.IsType<List<TaskDto>>(okObjectResult);
-        Assert.Equal(tasks, returnedTasks);
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTaskDto = Assert.IsType<List<TaskDto>>(okObjectResult.Value);
+        Assert.Equal(tasks, returnedTaskDto);
+
+
     }
 
     [Fact]
@@ -98,8 +101,8 @@ public class TaskControllerTests
 
         var result = await _taskController.GetTaskById(taskId);
 
-        var okObjectResult = Assert.IsType<TaskDto>(result);
-        var returnedTaskDto = Assert.IsType<TaskDto>(okObjectResult);
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTaskDto = Assert.IsType<TaskDto>(okObjectResult.Value);
         Assert.Equal(taskDto, returnedTaskDto);
     }
 
@@ -120,7 +123,8 @@ public class TaskControllerTests
             DueDate = DateTime.Parse("0001-01-01T00:00:00"),
             Id = 2005
         };
-        _mockTaskManager.Setup(manager => manager.Update(taskDto)).Returns(Task.CompletedTask);
+
+
         var result = await _taskController.UpdateTask(taskDto);
         Assert.IsType<NoContentResult>(result);
     }
@@ -166,9 +170,10 @@ public class TaskControllerTests
 
         var result = await _taskController.GetTasksByUserId(userId);
 
-        var okObjectResult = Assert.IsType<List<TaskDto>>(result);
-        var returnedTasks = Assert.IsType<List<TaskDto>>(okObjectResult);
-        Assert.Equal(tasks, returnedTasks);
+
+        var okObjectResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTaskDto = Assert.IsType<List<TaskDto>>(okObjectResult.Value);
+        Assert.Equal(tasks, returnedTaskDto);
     }
 
     [Fact]

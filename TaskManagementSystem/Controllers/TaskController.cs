@@ -22,7 +22,7 @@ public class TaskController : ControllerBase
         try
         {
             var result = await _manager.CreateTask(taskDto);
-            return Ok(new { Message = "Task created successfully!", Data = result });
+            return Ok(result);
         }
         catch (PlatformException e)
         {
