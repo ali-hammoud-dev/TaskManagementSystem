@@ -26,14 +26,19 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         try
         {
             var entity = await _repository.GetByIdAsync(id);
-            _loggerService.LogInfo($"Retrieved entity by id = {id},of type {entity.GetType().FullName}");
+            if (entity is null)
+            {
+                _loggerService.LogInfo($"Cannot Get Entity By Id{id}");
+                throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.BadRequest).ErrorMessage($"Cannot Get Entity By Id{id}").Build();
+            }
+            _loggerService.LogInfo("Retrieving entity successfully");
             return entity;
         }
-        catch (Exception e)
+        catch (PlatformException e)
         {
 
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(e.StatusCode).ErrorMessage(e.ErrorMessage).Build();
         }
     }
 
@@ -42,14 +47,28 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
         try
         {
             var entities = await _repository.GetAllAsync();
-            _loggerService.LogInfo("Retrieving entities successfully");
-            return entities;
 
+            if (!entities.Any())
+            {
+                _loggerService.LogInfo("No entities found.");
+                throw new PlatformExceptionBuilder()
+                    .StatusCode(HttpStatusCode.NotFound)
+                    .ErrorMessage("No entities found.")
+                    .Build();
+            }
+
+            _loggerService.LogInfo("Entities retrieved successfully.");
+            return entities;
         }
-        catch (Exception e)
+        catch (PlatformException e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
+
+            throw new PlatformExceptionBuilder()
+                .StatusCode(HttpStatusCode.InternalServerError)
+                .InnerException(e)
+                .ErrorMessage(e.ErrorMessage)
+                .Build();
         }
     }
 
@@ -61,10 +80,10 @@ public class BaseManager<TEntity> : IBaseManager<TEntity> where TEntity : class
             _loggerService.LogInfo($"Added successfully {entityToBeCreated.GetType().FullName}");
             return entityToBeCreated;
         }
-        catch (Exception e)
+        catch (PlatformException e)
         {
             _loggerService.LogErrorException(e);
-            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.Message).Build();
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NoContent).ErrorMessage(e.ErrorMessage).Build();
         }
     }
 

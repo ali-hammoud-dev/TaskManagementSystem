@@ -7,9 +7,22 @@ namespace TaskManagementSystem.DataAccess;
 
 public class DataContext : IdentityDbContext<IdentityUser>
 {
+    public DataContext()
+    {
+        
+    }
+
     public DbSet<TaskModel> Tasks { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        if (!options.IsConfigured)
+        {
+            options.UseSqlServer("Server=(localdb)\\Local;Database=TaskManagement.db;TrustServerCertificate=True");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

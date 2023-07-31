@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection;
 using TaskManagementSystem.Business.DTOs;
 using TaskManagementSystem.Business.Managers.Interfaces;
+using TaskManagementSystem.Business.Validator.Interfaces;
 using TaskManagementSystem.Common.Enums;
 using TaskManagementSystem.Common.Exceptions;
 using TaskManagementSystem.DataAccess.Interfaces;
@@ -16,10 +18,15 @@ namespace TaskManagementSystem.Business.Managers;
 public class TaskManager : BaseManager<TaskModel>, ITaskManager
 {
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly ITaskValidator _taskValidator;
 
-    public TaskManager(ITaskRepository repository, IMapper mapper, ILoggerService loggerService, IHttpContextAccessor contextAccessor) : base(repository, mapper, loggerService)
+    public TaskManager(ITaskRepository repository,
+        IMapper mapper, ILoggerService loggerService,
+        IHttpContextAccessor contextAccessor,
+        ITaskValidator taskValidator) : base(repository, mapper, loggerService)
     {
         _contextAccessor = contextAccessor;
+        _taskValidator = taskValidator;
     }
 
     public async Task<TaskDto> GetById(int id)
@@ -54,17 +61,25 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
 
     public async Task Update(TaskDto taskDto)
     {
-        if (taskDto.Id == 0)
-            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
-                .ErrorMessage("Task does not Exist.").Build();
+        _taskValidator.ValidateUpdate(taskDto);
+        var task = await QueryItemAsync(x => x.Id == taskDto.Id && x.UserId == taskDto.UserId);
+        if (task != null)
+            await UpdateAsync(Mapper.Map<TaskModel>(taskDto));
+        else
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.BadRequest)
+                .ErrorMessage("User Should Be Assigned To a User.").Build();
 
-
-        await UpdateAsync(Mapper.Map<TaskModel>(taskDto));
     }
 
     public async Task<IEnumerable<TaskDto>> GetTaskForUser(string userId)
     {
         var entities = await QueryAsync(x => x.UserId == userId);
+        if (entities.IsNullOrEmpty())
+
+            throw new PlatformExceptionBuilder()
+                .StatusCode(HttpStatusCode.NotFound)
+                .ErrorMessage("No task for this user").Build();
+
         return Mapper.Map<IEnumerable<TaskDto>>(entities);
     }
 
