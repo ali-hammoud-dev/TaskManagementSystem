@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Security.Claims;
 using TaskManagementSystem.Business.DTOs;
@@ -19,6 +20,8 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
 {
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ITaskValidator _taskValidator;
+    private readonly ConcurrentQueue<int> _requestQueue = new();
+    private bool _isProcessingQueue;
 
     public TaskManager(ITaskRepository repository,
         IMapper mapper, ILoggerService loggerService,
@@ -29,16 +32,18 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
         _taskValidator = taskValidator;
     }
 
-    public async Task<TaskDto> GetById(int id)
+    public async Task<TaskDto?> GetById(int id)
     {
-        var taskEntity = await GetByIdAsync(id);
-        if (taskEntity is null)
+        try
+        {
+            _requestQueue.Enqueue(id);
+            return await ProcessRequestQueue();
+        }
+        catch (PlatformException e)
+        {
             throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
                 .ErrorMessage("Task does not Exist.").Build();
-
-        var taskDto = Mapper.Map<TaskDto>(taskEntity);
-
-        return taskDto;
+        }
     }
 
     public async Task<IEnumerable<TaskDto>> GetAll()
@@ -63,11 +68,7 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
     {
         _taskValidator.ValidateUpdate(taskDto);
         var task = await QueryItemAsync(x => x.Id == taskDto.Id && x.UserId == taskDto.UserId);
-        if (task != null)
-            await UpdateAsync(Mapper.Map<TaskModel>(taskDto));
-        else
-            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.BadRequest)
-                .ErrorMessage("User Should Be Assigned To a User.").Build();
+        await UpdateAsync(Mapper.Map<TaskModel>(taskDto));
 
     }
 
@@ -123,6 +124,42 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
             return userIdClaim.Value;
 
         return string.Empty;
+    }
+
+    private async Task<TaskDto?> ProcessRequestQueue()
+    {
+        if (_isProcessingQueue)
+            return null;
+
+        _isProcessingQueue = true;
+        var taskDto = new TaskDto();
+
+        while (_requestQueue.TryDequeue(out int id))
+        {
+            try
+            {
+                taskDto = await ProcessGetById(id);
+            }
+            catch (PlatformException ex)
+            {
+                throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
+                    .ErrorMessage($"Error processing Task with ID {id}: {ex.Message}").Build();
+            }
+        }
+
+        _isProcessingQueue = false;
+        return taskDto;
+    }
+
+    private async Task<TaskDto> ProcessGetById(int id)
+    {
+        var taskEntity = await GetByIdAsync(id);
+        if (taskEntity is null)
+            throw new PlatformExceptionBuilder().StatusCode(HttpStatusCode.NotFound)
+                .ErrorMessage("Task does not Exist.").Build();
+
+        var taskDto = Mapper.Map<TaskDto>(taskEntity);
+        return taskDto;
     }
     #endregion
 }

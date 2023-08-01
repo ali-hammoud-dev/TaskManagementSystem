@@ -5,7 +5,7 @@ namespace TaskManagementSystem.Business.Managers.Interfaces;
 
 public interface ITaskManager : IBaseManager<TaskModel>
 {
-    Task<TaskDto> GetById(int id);
+    Task<TaskDto?> GetById(int id);
 
     Task<IEnumerable<TaskDto>> GetAll();
 
