@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 using TaskManagementSystem.Business.DTOs;
 using TaskManagementSystem.Business.Managers.Interfaces;
-using TaskManagementSystem.Business.Validator.Interfaces;
 using TaskManagementSystem.Common.Enums;
 using TaskManagementSystem.Common.Exceptions;
 using TaskManagementSystem.DataAccess.Interfaces;
@@ -19,17 +18,14 @@ namespace TaskManagementSystem.Business.Managers;
 public class TaskManager : BaseManager<TaskModel>, ITaskManager
 {
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly ITaskValidator _taskValidator;
     private readonly ConcurrentQueue<int> _requestQueue = new();
     private bool _isProcessingQueue;
 
     public TaskManager(ITaskRepository repository,
         IMapper mapper, ILoggerService loggerService,
-        IHttpContextAccessor contextAccessor,
-        ITaskValidator taskValidator) : base(repository, mapper, loggerService)
+        IHttpContextAccessor contextAccessor) : base(repository, mapper, loggerService)
     {
         _contextAccessor = contextAccessor;
-        _taskValidator = taskValidator;
     }
 
     public async Task<TaskDto?> GetById(int id)
@@ -66,7 +62,6 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
 
     public async Task Update(TaskDto taskDto)
     {
-        _taskValidator.ValidateUpdate(taskDto);
         var task = await QueryItemAsync(x => x.Id == taskDto.Id && x.UserId == taskDto.UserId);
         await UpdateAsync(Mapper.Map<TaskModel>(taskDto));
 

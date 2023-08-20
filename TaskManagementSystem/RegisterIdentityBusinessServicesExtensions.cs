@@ -1,7 +1,5 @@
 ﻿using TaskManagementSystem.Business.Managers;
 using TaskManagementSystem.Business.Managers.Interfaces;
-using TaskManagementSystem.Business.Validator;
-using TaskManagementSystem.Business.Validator.Interfaces;
 using TaskManagementSystem.DataAccess.Interfaces;
 using TaskManagementSystem.DataAccess.Repositories;
 using TaskManagementSystem.Logging;
@@ -19,7 +17,6 @@ public static class RegisterIdentityBusinessServicesExtensions
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<ICustomUsermanager, CustomUserManager>();
         services.AddScoped<ITaskManager, TaskManager>();
-        services.AddScoped<ITaskValidator, TaskValidator>();
 
         services.Configure<Program>(configuration.GetSection("Program"));
 
