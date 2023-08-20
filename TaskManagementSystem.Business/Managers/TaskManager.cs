@@ -23,10 +23,8 @@ public class TaskManager : BaseManager<TaskModel>, ITaskManager
 
     public TaskManager(ITaskRepository repository,
         IMapper mapper, ILoggerService loggerService,
-        IHttpContextAccessor contextAccessor) : base(repository, mapper, loggerService)
-    {
-        _contextAccessor = contextAccessor;
-    }
+        IHttpContextAccessor contextAccessor) : base(repository, mapper, loggerService) => _contextAccessor = contextAccessor;
+
 
     public async Task<TaskDto?> GetById(int id)
     {
